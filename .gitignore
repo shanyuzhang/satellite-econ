@@ -13,6 +13,7 @@ data/processed/*
 !data/processed/.gitkeep
 data/raw/*.csv
 !data/raw/guangdong_county_gdp_template.csv
+!data/raw/guangdong_county_gdp.csv
 outputs/checkpoints/*
 !outputs/checkpoints/.gitkeep
 outputs/logs/*
