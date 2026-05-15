@@ -1,0 +1,293 @@
+[GEE] 已初始化，project=satellite-econ
+[1/5] 加载广东省边界 ...
+     匹配 ADM1 'Guangdong Sheng'：1 个 feature
+     启用 region_subset：['Guangzhou', 'Shenzhen', 'Foshan', 'Dongguan', 'Zhongshan', 'Zhuhai', 'Huizhou', 'Zhaoqing', 'Jiangmen']
+     匹配 ADM2 子集：9 个地级市
+[2/5] 生成 2400m 网格 ...
+[3/5] 用 GHSL SMOD>=21 且 urban_frac>=0.1 过滤网格 ...
+[3.5/5] 给每个网格分配 county_code（ADM2） ...
+     => 保留 4730 个网格
+[skip-existing] 扫 GEE 任务列表 ...
+urllib3.exceptions.SSLError: [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/requests/adapters.py", line 696, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/connectionpool.py", line 842, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/util/retry.py", line 543, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Max retries exceeded with url: /v1/projects/satellite-econ/operations/2VPDOYTG67RMLRFZQPZ2LRHU?alt=json (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/ee/_cloud_api_utils.py", line 79, in request
+    response = self._session.request(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/requests/sessions.py", line 784, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/requests/adapters.py", line 727, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Max retries exceeded with url: /v1/projects/satellite-econ/operations/2VPDOYTG67RMLRFZQPZ2LRHU?alt=json (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)')))
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/kyle/Desktop/satellite/scripts/01_export_gee.py", line 561, in <module>
+    main()
+  File "/Users/kyle/Desktop/satellite/scripts/01_export_gee.py", line 450, in main
+    existing = get_existing_task_descriptions() if args.skip_existing else set()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle/Desktop/satellite/scripts/01_export_gee.py", line 300, in get_existing_task_descriptions
+    s = t.status()
+        ^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/ee/batch.py", line 176, in status
+    operation = data.getOperation(self.operation_name)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/ee/data.py", line 1688, in getOperation
+    return _execute_cloud_call(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/ee/data.py", line 359, in _execute_cloud_call
+    return call.execute(num_retries=num_retries)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/googleapiclient/_helpers.py", line 130, in positional_wrapper
+    return wrapped(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/googleapiclient/http.py", line 923, in execute
+    resp, content = _retry_request(
+                    ^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/googleapiclient/http.py", line 222, in _retry_request
+    raise exception
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/googleapiclient/http.py", line 191, in _retry_request
+    resp, content = http.request(uri, method, *args, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/google_auth_httplib2.py", line 214, in request
+    response, content = self.http.request(
+                        ^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/ee/_cloud_api_utils.py", line 83, in request
+    raise ConnectionError(connection_error) from connection_error
+ConnectionError: HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Max retries exceeded with url: /v1/projects/satellite-econ/operations/2VPDOYTG67RMLRFZQPZ2LRHU?alt=json (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1016)')))
+[GEE] 已初始化，project=satellite-econ
+[1/5] 加载广东省边界 ...
+     匹配 ADM1 'Guangdong Sheng'：1 个 feature
+     启用 region_subset：['Guangzhou', 'Shenzhen', 'Foshan', 'Dongguan', 'Zhongshan', 'Zhuhai', 'Huizhou', 'Zhaoqing', 'Jiangmen']
+     匹配 ADM2 子集：9 个地级市
+[2/5] 生成 2400m 网格 ...
+[3/5] 用 GHSL SMOD>=21 且 urban_frac>=0.1 过滤网格 ...
+[3.5/5] 给每个网格分配 county_code（ADM2） ...
+     => 保留 4730 个网格
+[skip-existing] 扫 GEE 任务列表 ...
+     ✓ 已有 2502 个 task（未失败）
+[4/5] 提交 grid_meta 表格导出 ...
+     [skip-existing] grid_meta 已存在，跳过
+[5/5a] 预拉取 4730 个 grid 的元信息（5 个 aggregate_array 调用）...
+     ✓ 拉到 4730 条记录
+[5/5b] 提交 S2 和 VIIRS 导出任务（按年）...
+     [skip-existing] viirs_2018 已存在，跳过
+     ... 已提交 100 个，跳过 2500 个
+     ... 已提交 200 个，跳过 2500 个
+     ... 已提交 300 个，跳过 2500 个
+     ... 已提交 400 个，跳过 2500 个
+     ... 已提交 500 个，跳过 2500 个
+     ... 已提交 600 个，跳过 2500 个
+     ... 已提交 700 个，跳过 2500 个
+     ... 已提交 800 个，跳过 2500 个
+     ... 已提交 900 个，跳过 2500 个
+     ... 已提交 1000 个，跳过 2500 个
+     ... 已提交 1100 个，跳过 2500 个
+     ... 已提交 1200 个，跳过 2500 个
+     ... 已提交 1300 个，跳过 2500 个
+     ... 已提交 1400 个，跳过 2500 个
+     ... 已提交 1500 个，跳过 2500 个
+     ... 已提交 1600 个，跳过 2500 个
+     ... 已提交 1700 个，跳过 2500 个
+     ... 已提交 1800 个，跳过 2500 个
+     ... 已提交 1900 个，跳过 2500 个
+     ... 已提交 2000 个，跳过 2500 个
+     ... 已提交 2100 个，跳过 2500 个
+     ... 已提交 2200 个，跳过 2500 个
+     ... 已提交 2300 个，跳过 2500 个
+     ... 已提交 2400 个，跳过 2500 个
+     ... 已提交 2500 个，跳过 2500 个
+     ... 已提交 2600 个，跳过 2500 个
+     ... 已提交 2700 个，跳过 2500 个
+     ... 已提交 2800 个，跳过 2500 个
+     ... 已提交 2900 个，跳过 2500 个
+     ... 已提交 3000 个，跳过 2500 个
+     [节流] 当前 pending=2787 ≥ 2500，等 60s ...
+     [节流] 当前 pending=2646 ≥ 2500，等 60s ...
+     ... 已提交 3100 个，跳过 2500 个
+     ... 已提交 3200 个，跳过 2500 个
+     ... 已提交 3300 个，跳过 2500 个
+     ... 已提交 3400 个，跳过 2500 个
+     ... 已提交 3500 个，跳过 2500 个
+     [节流] 当前 pending=2731 ≥ 2500，等 60s ...
+     [节流] 当前 pending=2590 ≥ 2500，等 60s ...
+     ... 已提交 3600 个，跳过 2500 个
+     ... 已提交 3700 个，跳过 2500 个
+     ... 已提交 3800 个，跳过 2500 个
+     ... 已提交 3900 个，跳过 2500 个
+     ... 已提交 4000 个，跳过 2500 个
+     [节流] 当前 pending=2611 ≥ 2500，等 60s ...
+     ... 已提交 4100 个，跳过 2500 个
+     ... 已提交 4200 个，跳过 2500 个
+     ... 已提交 4300 个，跳过 2500 个
+     ... 已提交 4400 个，跳过 2500 个
+     ... 已提交 4500 个，跳过 2500 个
+     ... 已提交 4600 个，跳过 2500 个
+     ... 已提交 4700 个，跳过 2500 个
+     ... 已提交 4800 个，跳过 2500 个
+     ... 已提交 4900 个，跳过 2500 个
+     ... 已提交 5000 个，跳过 2500 个
+     ... 已提交 5100 个，跳过 2500 个
+     ... 已提交 5200 个，跳过 2500 个
+     ... 已提交 5300 个，跳过 2500 个
+     ... 已提交 5400 个，跳过 2500 个
+     ... 已提交 5500 个，跳过 2500 个
+     ... 已提交 5600 个，跳过 2500 个
+     ... 已提交 5700 个，跳过 2500 个
+     ... 已提交 5800 个，跳过 2500 个
+     ... 已提交 5900 个，跳过 2500 个
+     ... 已提交 6000 个，跳过 2500 个
+     [节流] 当前 pending=2718 ≥ 2500，等 60s ...
+     ... 已提交 6100 个，跳过 2500 个
+     ... 已提交 6200 个，跳过 2500 个
+     ... 已提交 6300 个，跳过 2500 个
+     ... 已提交 6400 个，跳过 2500 个
+     ... 已提交 6500 个，跳过 2500 个
+     ... 已提交 6600 个，跳过 2500 个
+     ... 已提交 6700 个，跳过 2500 个
+     ... 已提交 6800 个，跳过 2500 个
+     ... 已提交 6900 个，跳过 2500 个
+     ... 已提交 7000 个，跳过 2500 个
+     ... 已提交 7100 个，跳过 2500 个
+     ... 已提交 7200 个，跳过 2500 个
+     ... 已提交 7300 个，跳过 2500 个
+     ... 已提交 7400 个，跳过 2500 个
+     ... 已提交 7500 个，跳过 2500 个
+     ... 已提交 7600 个，跳过 2500 个
+     ... 已提交 7700 个，跳过 2500 个
+     ... 已提交 7800 个，跳过 2500 个
+     ... 已提交 7900 个，跳过 2500 个
+     ... 已提交 8000 个，跳过 2500 个
+     ... 已提交 8100 个，跳过 2500 个
+     ... 已提交 8200 个，跳过 2500 个
+     ... 已提交 8300 个，跳过 2500 个
+     ... 已提交 8400 个，跳过 2500 个
+     ... 已提交 8500 个，跳过 2500 个
+     [节流] 当前 pending=2837 ≥ 2500，等 60s ...
+     [节流] 当前 pending=2729 ≥ 2500，等 60s ...
+     [节流] 当前 pending=2593 ≥ 2500，等 60s ...
+     ... 已提交 8600 个，跳过 2500 个
+     ... 已提交 8700 个，跳过 2500 个
+     ... 已提交 8800 个，跳过 2500 个
+     ... 已提交 8900 个，跳过 2500 个
+     ... 已提交 9000 个，跳过 2500 个
+     [节流] 当前 pending=2817 ≥ 2500，等 60s ...
+Traceback (most recent call last):
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/socket.py", line 974, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno 8] nodename nor servname provided, or not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/connectionpool.py", line 788, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+    raise new_e
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/connectionpool.py", line 1106, in _validate_conn
+    conn.connect()
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/connection.py", line 759, in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/connection.py", line 211, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: HTTPSConnection(host='earthengine.googleapis.com', port=443): Failed to resolve 'earthengine.googleapis.com' ([Errno 8] nodename nor servname provided, or not known)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/requests/adapters.py", line 696, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/connectionpool.py", line 842, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/urllib3/util/retry.py", line 543, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Max retries exceeded with url: /v1/projects/satellite-econ/operations/FCXTCMWXKDXQGADZPUD5TMOY?alt=json (Caused by NameResolutionError("HTTPSConnection(host='earthengine.googleapis.com', port=443): Failed to resolve 'earthengine.googleapis.com' ([Errno 8] nodename nor servname provided, or not known)"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/ee/_cloud_api_utils.py", line 79, in request
+    response = self._session.request(
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/requests/sessions.py", line 784, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/requests/adapters.py", line 729, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Max retries exceeded with url: /v1/projects/satellite-econ/operations/FCXTCMWXKDXQGADZPUD5TMOY?alt=json (Caused by NameResolutionError("HTTPSConnection(host='earthengine.googleapis.com', port=443): Failed to resolve 'earthengine.googleapis.com' ([Errno 8] nodename nor servname provided, or not known)"))
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/kyle/Desktop/satellite/scripts/01_export_gee.py", line 594, in <module>
+    main()
+  File "/Users/kyle/Desktop/satellite/scripts/01_export_gee.py", line 552, in main
+    wait_if_quota_full(max_pending=max_pending)
+  File "/Users/kyle/Desktop/satellite/scripts/01_export_gee.py", line 344, in wait_if_quota_full
+    st = t.status().get("state", "")
+         ^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/ee/batch.py", line 176, in status
+    operation = data.getOperation(self.operation_name)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/ee/data.py", line 1688, in getOperation
+    return _execute_cloud_call(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/ee/data.py", line 359, in _execute_cloud_call
+    return call.execute(num_retries=num_retries)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/googleapiclient/_helpers.py", line 130, in positional_wrapper
+    return wrapped(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/googleapiclient/http.py", line 923, in execute
+    resp, content = _retry_request(
+                    ^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/googleapiclient/http.py", line 222, in _retry_request
+    raise exception
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/googleapiclient/http.py", line 191, in _retry_request
+    resp, content = http.request(uri, method, *args, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/google_auth_httplib2.py", line 214, in request
+    response, content = self.http.request(
+                        ^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle1/anaconda3/envs/satellite/lib/python3.11/site-packages/ee/_cloud_api_utils.py", line 83, in request
+    raise ConnectionError(connection_error) from connection_error
+ConnectionError: HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Max retries exceeded with url: /v1/projects/satellite-econ/operations/FCXTCMWXKDXQGADZPUD5TMOY?alt=json (Caused by NameResolutionError("HTTPSConnection(host='earthengine.googleapis.com', port=443): Failed to resolve 'earthengine.googleapis.com' ([Errno 8] nodename nor servname provided, or not known)"))

@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Data and outputs
+data/sentinel2/*
+!data/sentinel2/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/raw/*.csv
+!data/raw/guangdong_county_gdp_template.csv
+outputs/checkpoints/*
+!outputs/checkpoints/.gitkeep
+outputs/logs/*
+!outputs/logs/.gitkeep
+outputs/figures/*
+!outputs/figures/.gitkeep
+weights/*.pth
+weights/*.pt
+
+# wandb
+wandb/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp

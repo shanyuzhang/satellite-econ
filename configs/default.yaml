@@ -1,0 +1,117 @@
+# 广东省卫星-经济预测实验：集中超参数配置
+# 所有可调参数在此修改；脚本和训练入口都从这里读
+
+data:
+  region: "Guangdong"
+  region_admin1_name: "Guangdong Sheng"  # GAUL 2015 中国省份带 "Sheng" 后缀
+
+  # 可选：只导出广东省内部分地市（基于 GAUL ADM2_NAME，纯拼音不带 Shi 后缀）
+  # null 表示全省；填 list 表示子集。GAUL 里广东共 21 个地级市，珠三角 9 市如下：
+  region_subset:
+    - Guangzhou
+    - Shenzhen
+    - Foshan
+    - Dongguan
+    - Zhongshan
+    - Zhuhai
+    - Huizhou
+    - Zhaoqing
+    - Jiangmen
+  # S2_SR_HARMONIZED 从 2017-03 才有数据，2018 起覆盖才完整 → 用 2018-2023
+  years: [2018, 2019, 2020, 2021, 2022, 2023]
+  base_year: 2018                        # 用于计算 base_log_gdp（初始条件控制变量）
+
+  grid_size_m: 2400                      # 2.4 km 网格
+  image_size: 224                        # 模型输入分辨率
+  bands: [B2, B3, B4, B5, B6, B7, B8, B11, B12]   # 9 波段
+  s2_scale: 10                           # GeoTIFF 导出分辨率（米）
+  composite_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  # 全年合成（PRD 雨季多云，5-8 月窗口太窄，部分边缘网格 raw count=0）
+  s2_collection: "COPERNICUS/S2_SR_HARMONIZED"
+  scl_exclude: [3, 8, 9, 10, 11]         # 云阴影、云中、云高、卷云、雪
+  ghsl_collection: "JRC/GHSL/P2023A/GHS_SMOD_V2-0"
+  # SMOD 等级：10=水, 11/12=农村, 13=乡村集群, 21=郊区, 22=半密集城市, 23=密集城市, 30=城市中心
+  ghsl_min_smod: 21                      # 21=郊区以上（配合 region_subset=珠三角，规模合适）
+  ghsl_min_urban_frac: 0.10              # 同时要求至少 10% 像素达到 min_smod 级别（避免边缘网格）
+  viirs_collection: "NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG"
+
+  # 路径
+  paths:
+    raw_dir: "data/raw"
+    sentinel2_dir: "data/sentinel2"
+    processed_dir: "data/processed"
+    gdp_csv: "data/raw/guangdong_county_gdp.csv"
+    gdp_template_csv: "data/raw/guangdong_county_gdp_template.csv"
+    grid_meta_csv: "data/processed/grid_meta.csv"
+    viirs_csv: "data/processed/viirs.csv"
+    labels_csv: "data/processed/labels.csv"
+    split_json: "data/processed/split.json"
+    feature_stats_json: "data/processed/feature_stats.json"
+    band_stats_json: "data/processed/band_stats.json"
+    task_log_csv: "data/processed/gee_task_log.csv"
+
+  # GEE 导出参数
+  gee:
+    project: satellite-econ              # 你的 GCP project ID；留 null 表示从环境变量 EARTHENGINE_PROJECT 读
+    drive_folder: "gee_guangdong_s2"
+    monitor_interval_s: 60               # 任务状态轮询间隔
+    max_pending_tasks: 2500              # pending 任务上限（GEE 上限 3000，留 buffer）
+    throttle_every: 500                  # 每提交 N 个任务检查一次 quota
+
+  # 划分参数（按县划分，防泄漏）
+  split:
+    train_ratio: 0.6
+    valid_ratio: 0.2
+    test_ratio: 0.2
+    seed: 42
+
+  # 数值特征（送入 AFF 的列）
+  numeric_features: [base_log_gdp_z, viirs_z]
+
+train:
+  model: M2                              # M1 | M2 | M3 | M4
+  mode: level                            # level | diff1
+  batch_size: 32
+  epochs: 200
+  early_stop_patience: 30
+  warmup_epochs: 5
+  num_workers: 8
+  seed: 42
+  weight_decay: 0.05
+  grad_clip: 1.0
+
+  # 差异化学习率（按模型）
+  lr:
+    M1: {backbone: 0.0001, head: 0.0005}
+    M2: {cnn: 0.0001, transformer: 0.001, head: 0.0005}
+    M3: {backbone: 0.00001, head: 0.0005}
+    M4: {finetune: 0.00001, head: 0.0005, freeze_layers: 20}
+
+  # 数据增强
+  augment:
+    hflip: true
+    vflip: true
+    rot90: true
+
+model:
+  # M2 Transformer 配置
+  transformer:
+    layers: 4
+    dim: 256
+    heads: 8
+    mlp_ratio: 4
+    dropout: 0.1
+
+  # AFF 配置
+  aff:
+    mid_dim: 256                          # 内部投影维度
+    reduction: 4
+
+  # M4 SatMAE 路径
+  satmae:
+    weights_path: "weights/satmae_vit_large.pth"
+
+wandb:
+  project: "satellite-econ-guangdong"
+  entity: null                            # 在此填入你的 wandb 用户名/团队，或保持 null
+  mode: "online"                          # online | offline | disabled
+  log_interval: 1                         # epoch
