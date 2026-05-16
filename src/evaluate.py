@@ -54,8 +54,10 @@ def viirs_ols_baseline(config: dict, mode: str):
     """用 train 集拟合 (viirs_z, base_log_gdp_z) → 目标的 OLS，返回 test 集预测。"""
     labels = pd.read_csv(config["data"]["paths"]["labels_csv"])
     target_col = "log_gdp" if mode == "level" else "diff_log_gdp"
-    labels = labels.dropna(subset=[target_col])
     feats = config["data"]["numeric_features"]
+
+    # 去掉目标列和特征列里任何 NaN（边缘网格 VIIRS 缺测会有）
+    labels = labels.dropna(subset=[target_col] + feats)
 
     train_df = labels[labels["split"] == "train"]
     test_df = labels[labels["split"] == "test"]
