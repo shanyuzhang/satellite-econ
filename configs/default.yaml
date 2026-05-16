@@ -57,8 +57,11 @@ data:
     max_pending_tasks: 2500              # pending 任务上限（GEE 上限 3000，留 buffer）
     throttle_every: 500                  # 每提交 N 个任务检查一次 quota
 
-  # 划分参数（按县划分，防泄漏）
+  # 划分参数
   split:
+    # mode: by_county = 按县三分组（防泄漏，泛化最严格，但 9 市样本下量级跨域问题严重）
+    #       random    = grid 级随机划分（同县可跨 split，量级覆盖完整，预测变容易）
+    mode: random              # by_county | random
     train_ratio: 0.6
     valid_ratio: 0.2
     test_ratio: 0.2

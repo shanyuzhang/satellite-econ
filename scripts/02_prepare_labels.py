@@ -29,21 +29,14 @@ def load_config(path):
 
 def assign_gdp_to_grids(gdp_df: pd.DataFrame, grid_meta: pd.DataFrame) -> pd.DataFrame:
     """
-    简化方案：县 GDP 在该县所有 grid 上均匀分配。
-    grid_meta: grid_id, county_name (来自 GAUL ADM2_NAME), ...
-    gdp_df: county_name, year, gdp_billion_yuan
-    返回：grid_id, year, county_name, gdp_billion_yuan_grid
-
-    用 county_name 而非 county_code join，因为 GAUL ADM2_CODE 与中国国统局 6 位县码是
-    两套独立编码系统。
+    县 GDP → 网格 GDP。简化方案：city_gdp / n_grids_in_city 均匀分摊。
+    用 county_name (GAUL ADM2 拼音) join，绕开 NBS vs GAUL 编码不一致。
     """
-    # 标准化 county_name：strip + 转小写
     gdp_df = gdp_df.copy()
     grid_meta = grid_meta.copy()
     gdp_df["_cn"] = gdp_df["county_name"].astype(str).str.strip().str.lower()
     grid_meta["_cn"] = grid_meta["county_name"].astype(str).str.strip().str.lower()
 
-    # 每个县的 grid 数
     grids_per_county = grid_meta.groupby("_cn").size().rename("n_grids").reset_index()
     merged = gdp_df.merge(grids_per_county, on="_cn", how="inner")
     if len(merged) == 0:
@@ -51,12 +44,10 @@ def assign_gdp_to_grids(gdp_df: pd.DataFrame, grid_meta: pd.DataFrame) -> pd.Dat
         mnames = sorted(set(grid_meta["_cn"]))
         raise RuntimeError(
             f"gdp_df 和 grid_meta 的 county_name 没交集。\n"
-            f"gdp 里有: {gnames}\n"
-            f"grid_meta 里有: {mnames}"
+            f"gdp: {gnames}\n  grid_meta: {mnames}"
         )
     merged["gdp_per_grid"] = merged["gdp_billion_yuan"] / merged["n_grids"]
 
-    # 展开到每个 grid
     g2c = grid_meta[["grid_id", "_cn", "county_name"]]
     out = g2c.merge(merged[["_cn", "year", "gdp_per_grid"]], on="_cn", how="inner")
     out = out.rename(columns={"gdp_per_grid": "gdp_billion_yuan_grid"}) \
@@ -80,6 +71,26 @@ def split_by_county(county_codes, train_r, valid_r, test_r, seed):
             mapping[c] = "valid"
         else:
             mapping[c] = "test"
+    return mapping
+
+
+def split_by_grid(grid_ids, train_r, valid_r, test_r, seed):
+    """按 grid_id 随机三分组。同 grid 的所有年都在同一 split（防时间泄漏）。
+    但同 county 的不同 grid 可能跨 split（量级泄漏，预测变容易）。"""
+    rng = np.random.RandomState(seed)
+    gids = sorted(set(grid_ids))
+    rng.shuffle(gids)
+    n = len(gids)
+    n_train = int(n * train_r)
+    n_valid = int(n * valid_r)
+    mapping = {}
+    for i, g in enumerate(gids):
+        if i < n_train:
+            mapping[g] = "train"
+        elif i < n_train + n_valid:
+            mapping[g] = "valid"
+        else:
+            mapping[g] = "test"
     return mapping
 
 
@@ -124,15 +135,27 @@ def main():
     # 5. VIIRS 合并（每个 grid×year 一个值）
     df = grid_gdp.merge(viirs, on=["grid_id", "year"], how="left")
 
-    # 6. 划分（按 county_name 防泄漏；同一地级市的网格-年全在同一 split）
-    split_map = split_by_county(
-        df["county_name"].unique(),
-        cfg["data"]["split"]["train_ratio"],
-        cfg["data"]["split"]["valid_ratio"],
-        cfg["data"]["split"]["test_ratio"],
-        cfg["data"]["split"]["seed"],
-    )
-    df["split"] = df["county_name"].map(split_map)
+    # 6. 划分
+    split_cfg = cfg["data"]["split"]
+    mode = split_cfg.get("mode", "by_county")
+    if mode == "by_county":
+        print(f"[划分] 按 county_name 三分组（严格防泄漏）")
+        split_map = split_by_county(
+            df["county_name"].unique(),
+            split_cfg["train_ratio"], split_cfg["valid_ratio"],
+            split_cfg["test_ratio"], split_cfg["seed"],
+        )
+        df["split"] = df["county_name"].map(split_map)
+    elif mode == "random":
+        print(f"[划分] 按 grid_id 随机三分组（同 grid 所有年同 split，同 county 可跨 split）")
+        split_map = split_by_grid(
+            df["grid_id"].unique(),
+            split_cfg["train_ratio"], split_cfg["valid_ratio"],
+            split_cfg["test_ratio"], split_cfg["seed"],
+        )
+        df["split"] = df["grid_id"].map(split_map)
+    else:
+        raise ValueError(f"未知 split.mode: {mode}")
 
     # 7. 用训练集统计量做 z-score
     #    数值特征列名映射：源列 → 输出 z-score 列
@@ -174,9 +197,14 @@ def main():
     # 简要检查
     print("\n[检查] 各 split 的 (grid, year) 数量：")
     print(df.groupby("split").size())
-    print("\n[检查] county 是否跨 split 泄漏（应全部 == 1）：")
-    leak = df.groupby("county_name")["split"].nunique()
-    print(f"  county_name → split nunique 最大值 = {leak.max()}")
+    if mode == "by_county":
+        print("\n[检查] county 是否跨 split 泄漏（应全部 == 1）：")
+        leak = df.groupby("county_name")["split"].nunique()
+        print(f"  county_name → split nunique 最大值 = {leak.max()}")
+    else:
+        print("\n[检查] grid_id 是否跨 split 泄漏（应全部 == 1）：")
+        leak = df.groupby("grid_id")["split"].nunique()
+        print(f"  grid_id → split nunique 最大值 = {leak.max()}")
 
 
 if __name__ == "__main__":
